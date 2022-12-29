@@ -1,0 +1,13 @@
+---
+version: '3'
+
+services:
+  chatgpt:
+    build: . 
+    container_name: "cgpt_bot"
+    restart: unless-stopped
+    # choose time zone for bot
+    environment:
+      - TZ=America/New_York
+    volumes:
+      - ./CGPT_Discord/data/config.json:/cgpt_bot/config.json
