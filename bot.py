@@ -1,6 +1,4 @@
 import json
-import os
-import requests
 
 # load the config from the config.json file
 with open('config.json', 'r') as f:
@@ -16,6 +14,7 @@ from discord.ext import commands
 with open('config.json') as f:
     data = json.load(f)
     TOKEN = data["DISCORD_TOKEN"]
+    ID = data["discord_id"]
 
 intents = discord.Intents.default()
 intents.message_content = True
@@ -27,8 +26,9 @@ class Bot(commands.Bot):
 
     async def startup(self):
         await bot.wait_until_ready()
-        await bot.tree.sync()
-        await bot.change_presence(status=discord.Status.online, activity=discord.Game(name="I smell some sales"))
+        await bot.tree.sync(guild=discord.Object(ID))
+        await bot.change_presence(status=discord.Status.online,
+                                  activity=discord.Activity(type=discord.ActivityType.listening, name="/cgpt"))
         print('Sucessfully synced applications commands')
         print(f'Connected as {bot.user}')
 

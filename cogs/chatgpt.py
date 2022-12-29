@@ -2,6 +2,8 @@ import json
 import os
 
 import requests
+import discord
+from discord import app_commands
 from discord.ext import commands
 
 with open('config.json', 'r') as f:
@@ -9,6 +11,7 @@ with open('config.json', 'r') as f:
 
 url = f"http://{config['ip']}:{config['port']}/api/ask"
 headers = {'Authorization': str(config['api_key'])}
+discord_id = config['discord_id']
 
 
 class ChatGPT(commands.Cog):
@@ -46,12 +49,15 @@ class ChatGPT(commands.Cog):
 
         return response.json().get('content', 'No content available, Try again')
 
-    @commands.command(name='chat', aliases=['chatgpt'], description='Chat with the chatgpt model')
-    async def echo(self, ctx, *, message: str):
+    @app_commands.command(name="chatgpt", description='Chat with the ChatGPT bot')
+    @app_commands.describe(message="insert word or phrase that response will be based on")
+    @app_commands.guilds(discord.Object(id=discord_id))
+    async def cgpt(self, ctx: discord.Interaction, *, message: str):
+        await ctx.response.defer()
         response = self.process_message(message)
 
         # send the response back to the channel
-        await ctx.send(response)
+        await ctx.followup.send(response)
 
 
 async def setup(bot):  # set async function
