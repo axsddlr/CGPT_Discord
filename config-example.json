@@ -1,0 +1,6 @@
+{
+    "DISCORD_TOKEN": "<discord bot token>",
+    "ip": "<ip address>",
+    "port": <port>,
+    "api_key": <api_key>
+}
