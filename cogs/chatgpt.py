@@ -38,7 +38,15 @@ class ChatGPT(commands.Cog):
                 })
 
         # send the request with the data dictionary
-        response = requests.post(url, headers=headers, json=data)
+        try:
+            response = requests.post(url, headers=headers, json=data)
+            response.raise_for_status()
+        except requests.exceptions.RequestException as e:
+            # There was an error sending the request or receiving the response
+            print(f'Request error: {e}')
+            return f'Request error: {e}'
+            # You can handle the error here, or re-raise it to be caught by the caller
+            raise
 
         # save the response to the response.json file
         with open('response.json', 'w') as f:
