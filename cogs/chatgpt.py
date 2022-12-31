@@ -44,7 +44,9 @@ class ChatGPT(commands.Cog):
         except requests.exceptions.RequestException as e:
             # There was an error sending the request or receiving the response
             print(f'Request error: {e}')
-            return f'Request error: {e}'
+            if os.path.exists('response.json'):
+                os.remove('response.json')
+
             # You can handle the error here, or re-raise it to be caught by the caller
             raise
 
