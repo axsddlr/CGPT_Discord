@@ -1,0 +1,5 @@
+{
+    "DISCORD_TOKEN": "<discord bot token>",
+    "discord_id":"<discord_id>",
+    "api_key": "<openai_api_key>"
+}
