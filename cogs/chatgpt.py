@@ -3,8 +3,7 @@ import json
 import discord
 from discord import app_commands
 from discord.ext import commands
-from revChatGPT.Official import Chatbot
-
+from revChatGPT.Official import AsyncChatbot
 
 # Opening the config.json file and loading it into the config variable.
 with open('config.json', 'r') as f:
@@ -13,17 +12,11 @@ with open('config.json', 'r') as f:
 TOKEN = config["DISCORD_TOKEN"]
 discord_id = config["discord_id"]
 openai_api_key = config['api_key']
-chatbot = Chatbot(api_key=openai_api_key)
+chatbot = AsyncChatbot(api_key=openai_api_key)
 
 
 async def handle_response(message) -> str:
-    """
-    It takes a message as input, passes it to the chatbot, and returns the response
-
-    :param message: The message that the user sent to the bot
-    :return: The response message is being returned.
-    """
-    response = chatbot.ask(message, temperature=0.7, user=message.author.id)
+    response = await chatbot.ask(message)
     responseMessage = response["choices"][0]["text"]
 
     return responseMessage
