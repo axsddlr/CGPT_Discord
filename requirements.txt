@@ -1,4 +1,4 @@
 git+https://github.com/Rapptz/discord.py
 openai==0.26.4
 tiktoken==0.1.2
-revChatGPT==1.1.4
+revChatGPT==2.0.0
