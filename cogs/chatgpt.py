@@ -96,7 +96,14 @@ class ChatGPT(commands.Cog):
         It rolls back the chatbot by 1.
         """
         await ctx.response.defer()
-        chatbot.rollback(1)
+        try:
+            num = int(ctx.split(" ")[1])
+            chatbot.conversations.rollback("default", num)
+            print(f"Removed {num} messages from the conversation")
+        except IndexError:
+            print("Please specify the number of messages to remove")
+        except ValueError:
+            print("Please specify a valid number of messages to remove")
         await ctx.followup.send("Chatbot rolled back by 1 message")
 
     @app_commands.command(name="reset", description='Chat with the ChatGPT bot')
@@ -106,7 +113,7 @@ class ChatGPT(commands.Cog):
         It resets the chatbot.
         """
         await ctx.response.defer()
-        chatbot.reset()
+        chatbot.conversations.remove("default")
         await ctx.followup.send("Chatbot has been reset")
 
     @app_commands.command(name="chatgpt", description='Chat with the ChatGPT bot')
