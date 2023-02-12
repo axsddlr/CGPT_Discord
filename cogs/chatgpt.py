@@ -21,9 +21,11 @@ async def handle_response(message) -> str:
     choices = []
     async for line in chatbot.ask(message):
         for choice in line["choices"]:
-            choices.append(choice["text"].replace("<|im_end|>", ""))
+            cleaned_text = " ".join(choice["text"].split())
+            choices.append(cleaned_text)
+
     response = " ".join(choices)
-    return response
+    return response.replace("<|im_end|>", " ")
 
 
 async def send_message(message, user_message):
