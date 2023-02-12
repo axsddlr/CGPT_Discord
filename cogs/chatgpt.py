@@ -3,7 +3,7 @@ import json
 import discord
 from discord import app_commands
 from discord.ext import commands
-from revChatGPT.Official import AsyncChatbot
+from revChatGPT.V2 import Chatbot
 
 # Opening the config.json file and loading it into the config variable.
 with open('config.json', 'r') as f:
@@ -11,15 +11,19 @@ with open('config.json', 'r') as f:
 
 TOKEN = config["DISCORD_TOKEN"]
 discord_id = config["discord_id"]
-openai_api_key = config['api_key']
-chatbot = AsyncChatbot(api_key=openai_api_key)
+# openai_api_key = config['api_key']
+email = config['email']
+password = config['password']
+chatbot = Chatbot(email, password)
 
 
 async def handle_response(message) -> str:
-    response = await chatbot.ask(message)
-    responseMessage = response["choices"][0]["text"]
-
-    return responseMessage
+    choices = []
+    async for line in chatbot.ask(message):
+        for choice in line["choices"]:
+            choices.append(choice["text"].replace("<|im_end|>", ""))
+    response = " ".join(choices)
+    return response
 
 
 async def send_message(message, user_message):
@@ -32,9 +36,9 @@ async def send_message(message, user_message):
     # Sending the response to the user.
     try:
         # Creating a string that contains the user's message, the user's id, and the response from the chatbot.
-        response = '> **' + user_message + '** - <@' + \
-                   str(message.user.id) + '> \n\n'
-        response = f"{response}{await handle_response(user_message)}"
+        response = '> **' + user_message + '** - <@' + str(message.user.id) + '> \n\n'
+        # Get the response from the chatbot
+        response = response + await handle_response(user_message)
         # Checking if the response is greater than 1900 characters.
         if len(response) > 1900:
             if "```" in response:
@@ -76,7 +80,7 @@ async def send_message(message, user_message):
         else:
             await message.followup.send(response)
     except Exception as e:
-        await message.followup.send("> **Error: Something went wrong, please try again later!**")
+        await message.followup.send(f"> **Error: {e}**")
 
 
 class ChatGPT(commands.Cog):
