@@ -1,5 +1,6 @@
 import asyncio
 import json
+import re
 
 import discord
 import requests
@@ -35,9 +36,9 @@ async def send_conversation_request(message):
 
 async def handle_response(message) -> str:
     response = await send_conversation_request(message)
-    responseMessage = response["response"]
+    responseMessage = re.sub(r'\[\^\d\^\]', '', response["response"])
 
-    return responseMessage.replace("[^1^]", "")
+    return responseMessage
 
 
 async def send_message(message, user_message):
