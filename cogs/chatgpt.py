@@ -1,9 +1,10 @@
+import asyncio
 import json
 
 import discord
+import requests
 from discord import app_commands
 from discord.ext import commands
-from revChatGPT.V2 import Chatbot
 
 # Opening the config.json file and loading it into the config variable.
 with open('config.json', 'r') as f:
@@ -11,21 +12,32 @@ with open('config.json', 'r') as f:
 
 TOKEN = config["DISCORD_TOKEN"]
 discord_id = config["discord_id"]
-# openai_api_key = config['api_key']
-email = config['email']
-password = config['password']
-chatbot = Chatbot(email, password)
+api_url = config["api_url"]
+
+
+async def send_conversation_request(message):
+    url = f"{api_url}"
+
+    payload = {"message": message}
+    headers = {
+        "user-agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/109.0.0.0 "
+                      "Safari/537.36 Edg/109.0.1518.70",
+        "Content-Type": "application/json"
+    }
+
+    response = await asyncio.get_event_loop().run_in_executor(
+        None,
+        lambda: requests.request("POST", url, json=payload, headers=headers).json()
+    )
+
+    return response
 
 
 async def handle_response(message) -> str:
-    choices = []
-    async for line in chatbot.ask(message):
-        for choice in line["choices"]:
-            cleaned_text = " ".join(choice["text"].split())
-            choices.append(cleaned_text)
+    response = await send_conversation_request(message)
+    responseMessage = response["response"]
 
-    response = " ".join(choices)
-    return response.replace("<|im_end|>", " ")
+    return responseMessage.replace("[^1^]", "")
 
 
 async def send_message(message, user_message):
@@ -98,7 +110,7 @@ class ChatGPT(commands.Cog):
         await ctx.response.defer()
         try:
             num = int(ctx.split(" ")[1])
-            chatbot.conversations.rollback("default", num)
+            # chatbot.conversations.rollback("default", num)
             print(f"Removed {num} messages from the conversation")
         except IndexError:
             print("Please specify the number of messages to remove")
@@ -113,7 +125,7 @@ class ChatGPT(commands.Cog):
         It resets the chatbot.
         """
         await ctx.response.defer()
-        chatbot.conversations.remove("default")
+        # chatbot.conversations.remove("default")
         await ctx.followup.send("Chatbot has been reset")
 
     @app_commands.command(name="chatgpt", description='Chat with the ChatGPT bot')
