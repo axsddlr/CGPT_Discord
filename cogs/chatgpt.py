@@ -90,7 +90,7 @@ class ChatGPT(commands.Cog):
         self.bot = bot
 
     @app_commands.command(name="rollback", description='rolls back the chatbot by a specified amount of messages')
-    @app_commands.guilds(discord.Object(id=discord_id))
+    # @app_commands.guilds(discord.Object(id=discord_id))
     async def rollback_command(self, ctx):
         """
         It rolls back the chatbot by 1.
@@ -107,7 +107,7 @@ class ChatGPT(commands.Cog):
         await ctx.followup.send("Chatbot rolled back by 1 message")
 
     @app_commands.command(name="reset", description='Chat with the ChatGPT bot')
-    @app_commands.guilds(discord.Object(id=discord_id))
+    # @app_commands.guilds(discord.Object(id=discord_id))
     async def reset_command(self, ctx):
         """
         It resets the chatbot.
@@ -118,7 +118,7 @@ class ChatGPT(commands.Cog):
 
     @app_commands.command(name="chatgpt", description='Chat with the ChatGPT bot')
     @app_commands.describe(message="insert word or phrase that response will be based on")
-    @app_commands.guilds(discord.Object(id=discord_id))
+    # @app_commands.guilds(discord.Object(id=discord_id))
     async def cgpt(self, ctx: discord.Interaction, *, message: str):
         """
         `async def cgpt(self, ctx: discord.Interaction, *, message: str):`
